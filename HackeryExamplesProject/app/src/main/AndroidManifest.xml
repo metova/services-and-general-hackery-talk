@@ -22,6 +22,19 @@
         <service android:name=".ExampleAlarmService" />
         <service android:name=".ExampleForegroundService" />
 
+        <service
+            android:name=".AccountAuthenticatorService"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+
+
         <receiver android:name=".ExampleAlarmReceiver"
             android:exported="false"
             android:enabled="true"/>
