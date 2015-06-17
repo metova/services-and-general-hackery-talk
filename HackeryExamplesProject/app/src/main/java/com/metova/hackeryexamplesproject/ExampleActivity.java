@@ -28,6 +28,8 @@ public class ExampleActivity extends Activity {
     @Override
     protected void onStart() {
 
+        super.onStart();
+
         final Button start = (Button) findViewById(R.id.start_alarm);
 
         start.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +56,22 @@ public class ExampleActivity extends Activity {
                 doExploit();
             }
         });
+
+        final Button doBlacklist = (Button) findViewById(R.id.do_blacklist);
+
+        doBlacklist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                doBlacklist();
+            }
+        });
+    }
+
+    private void doBlacklist() {
+
+        Intent intent = new Intent(this, ExampleBlackListing.class);
+        startService(intent);
     }
 
     private void doExploit() {
