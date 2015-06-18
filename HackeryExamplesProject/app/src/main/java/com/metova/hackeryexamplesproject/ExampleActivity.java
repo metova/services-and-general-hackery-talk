@@ -2,21 +2,28 @@ package com.metova.hackeryexamplesproject;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import java.util.Calendar;
 
 public class ExampleActivity extends Activity {
+
+    public static final String TAG = ExampleActivity.class.getSimpleName();
+    public static final String ACTION_CRASH = "action_crash";
+    public static final String EXTRA_CRASH_INFO = "extra_crash_info";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +73,78 @@ public class ExampleActivity extends Activity {
                 doBlacklist();
             }
         });
+
+        final Button doCrash = (Button) findViewById(R.id.do_crash);
+
+        doCrash.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // Force a crash
+                ((String) null).length();
+            }
+        });
+
+        if(getIntent() != null && ACTION_CRASH.equals(getIntent().getAction())) {
+
+            showCrashInfo();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        showCrashDialog(false);
+        super.onDestroy();
+    }
+
+    private AlertDialog mCrashDialog = null;
+    private void showCrashInfo() {
+
+        showCrashDialog(true);
+    }
+
+    private void showCrashDialog(boolean show) {
+
+        Log.d(TAG, "showCrashDialog: " + Boolean.toString(show));
+
+        String crashMessage = getIntent().getStringExtra(EXTRA_CRASH_INFO);
+
+        if(show) {
+
+            if(mCrashDialog == null || !mCrashDialog.isShowing()) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setCancelable(false);
+                builder.setTitle("Oops, something went wrong!");
+                builder.setMessage("\n" + crashMessage + "\n");
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        showCrashDialog(false);
+                    }
+                });
+
+                mCrashDialog = builder.create();
+                mCrashDialog.show();
+            }
+        }
+        else {
+
+            try {
+
+                if(mCrashDialog != null && mCrashDialog.isShowing()) {
+
+                    mCrashDialog.dismiss();
+                }
+            }
+            catch (Exception e) { /* no-op */ }
+            finally {
+
+                mCrashDialog = null;
+            }
+        }
     }
 
     private void doBlacklist() {
